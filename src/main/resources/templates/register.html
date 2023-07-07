@@ -1,0 +1,246 @@
+<link href="//netdna.bootstrapcdn.com/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+<script src="//code.jquery.com/jquery-1.11.1.min.js"></script>
+<script src="//netdna.bootstrapcdn.com/bootstrap/3.1.0/js/bootstrap.min.js"></script>
+<meta charset="UTF-8">
+<title>MasterBet Register</title>
+<style>
+        body{
+        background: url(https://eskipaper.com/images/soccer-wallpaper-2.jpg)
+                    no-repeat center center fixed;
+    }
+
+.centered-form{
+	margin-top: 60px;
+}
+
+.centered-form .panel{
+	background: rgba(255, 255, 255, 0.8);
+	box-shadow: rgba(0, 0, 0, 0.3) 20px 20px 20px;
+}
+/* The message box is shown when the user clicks on the password field */
+#message {
+  display:none;
+  background: #f1f1f1;
+  color: #000;
+  position: relative;
+  padding: 20px;
+  margin-top: 10px;
+}
+
+#message p {
+  padding: 10px 35px;
+  font-size: 18px;
+}
+
+.valid {
+  color: green;
+}
+
+.valid:before {
+  position: relative;
+    left: -5px;
+  content: "✔";
+}
+
+.invalid {
+  color: red;
+}
+
+.invalid:before {
+  position: relative;
+  left: -5px;
+  content: "✖";
+}
+
+
+
+</style>
+<div class="container">
+    <div class="row centered-form">
+        <div class="col-xs-12 col-sm-8 col-md-4 col-sm-offset-2 col-md-offset-4">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Please sign up for MasterBet2.0 <small>It's free!</small></h3>
+                </div>
+                <div class="panel-body">
+                    <form th:action="@{/register}" method="post" th:object="${user}" role="form">
+
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                <div th:if="${errorMessage}!=null and ${errorMessage}!=''">
+                                    <div class="alert alert-danger">
+                                        <span th:text="${errorMessage}"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-12 col-md-12">
+                                <div class="form-group">
+                                    <input th:field="${user.username}" type="text" name="username" id="username"
+                                           class="form-control input-sm" placeholder="Username">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <input th:field="${user.email}" type="email" name="email" id="email"
+                                   class="form-control input-sm" placeholder="Email Address">
+                        </div>
+
+                        <div class="row">
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
+                                    <input th:field="${user.password}" type="password"
+                                           name="password" id="password"
+                                           class="form-control input-sm" placeholder="Password">
+                                </div>
+                            </div>
+                            <div class="col-xs-6 col-sm-6 col-md-6">
+                                <div class="form-group">
+                                    <input type="password" name="password_confirmation"
+                                           id="password_confirmation"
+                                           class="form-control input-sm" placeholder="Confirm Password">
+                                </div>
+                            </div>
+                            <div class="row" style="margin-top:1;margin-left:1%">
+                                <div class="col-sm-12">
+                                    <h3>Password must contain the following:</h3>
+                                    <p id="letter" class="invalid">A <b>lowercase</b> letter</p>
+                                    <p id="capital" class="invalid">A <b>capital (uppercase)</b> letter</p>
+                                    <p id="number" class="invalid">A <b>number</b></p>
+                                    <p id="length" class="invalid">Minimum <b>8 characters</b></p>
+                                    <p id="match" class="invalid">Passwords <b>the same</b></p>
+                                </div>
+                            </div>
+                            <div style="width:100%;text-align:center;" class="col-xs-12 col-sm-6 col-md-12">
+                                <span id='message'></span>
+                            </div>
+                        </div>
+                        <div style="margin-top:5px" class="row">
+                            <div class="col-xs-12 col-sm-6 col-md-12">
+                                <input disabled="disabled" id="submit" type="submit" value="Register"
+                                       class="btn btn-info btn-block">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+        function EnableDisable() {
+            var btnSubmit = document.getElementById("submit");
+            if (($('#password').val()!='' && $('#password_confirmation').val()!='') && $('#password').val() == $('#password_confirmation').val()) {
+                btnSubmit.disabled = false;
+<!--                 $('#message').html('Passwords is the same !').css('color', 'green');-->
+            } else {
+                btnSubmit.disabled = true;
+<!--                $('#message').html('Passwords are not the same !').css('color', 'red');-->
+            }
+        };
+
+
+</script>
+<script>
+var myInput = document.getElementById("password");
+var myInput2 = document.getElementById("password_confirmation");
+var letter = document.getElementById("letter");
+var capital = document.getElementById("capital");
+var number = document.getElementById("number");
+var length = document.getElementById("length");
+var match = document.getElementById("match");
+
+var btnSubmit = document.getElementById("submit");
+
+
+<!--// When the user clicks on the password field, show the message box-->
+<!--myInput.onfocus = function() {-->
+<!--  document.getElementById("message").style.display = "block";-->
+<!--}-->
+
+<!--// When the user clicks outside of the password field, hide the message box-->
+<!--myInput.onblur = function() {-->
+<!--  document.getElementById("message").style.display = "none";-->
+<!--}-->
+
+// When the user starts to type something inside the password field
+myInput.onkeyup = function() {
+  // Validate lowercase letters
+  var lowerCaseLetters = /[a-z]/g;
+  if(myInput.value.match(lowerCaseLetters)) {
+    letter.classList.remove("invalid");
+    letter.classList.add("valid");
+  } else {
+    letter.classList.remove("valid");
+    letter.classList.add("invalid");
+  }
+
+  // Validate capital letters
+  var upperCaseLetters = /[A-Z]/g;
+  if(myInput.value.match(upperCaseLetters)) {
+    capital.classList.remove("invalid");
+    capital.classList.add("valid");
+  } else {
+    capital.classList.remove("valid");
+    capital.classList.add("invalid");
+  }
+
+  // Validate numbers
+  var numbers = /[0-9]/g;
+  if(myInput.value.match(numbers)) {
+    number.classList.remove("invalid");
+    number.classList.add("valid");
+  } else {
+    number.classList.remove("valid");
+    number.classList.add("invalid");
+  }
+
+  // Validate length
+  if(myInput.value.length >= 8) {
+    length.classList.remove("invalid");
+    length.classList.add("valid");
+  } else {
+    length.classList.remove("valid");
+    length.classList.add("invalid");
+  }
+  // Validate match
+  if(myInput.value==myInput2.value) {
+    match.classList.remove("invalid");
+    match.classList.add("valid");
+  } else {
+    match.classList.remove("valid");
+    match.classList.add("invalid");
+  }
+
+  if(letter.className=='valid' && capital.className=='valid'
+      && number.className=='valid' && length.className=='valid'
+      && match.className=='valid'){
+         btnSubmit.disabled = false;
+     }else{
+         btnSubmit.disabled = true;
+     }
+  }
+
+  myInput2.onkeyup = function() {
+      // Validate match
+  if(myInput.value==myInput2.value) {
+    match.classList.remove("invalid");
+    match.classList.add("valid");
+  } else {
+    match.classList.remove("valid");
+    match.classList.add("invalid");
+  }
+
+  if(letter.className=='valid' && capital.className=='valid'
+  && number.className=='valid' && length.className=='valid'
+  && match.className=='valid'){
+     btnSubmit.disabled = false;
+     }else{
+     btnSubmit.disabled = true;
+     }
+  }
+</script>

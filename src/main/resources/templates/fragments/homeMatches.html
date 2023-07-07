@@ -1,0 +1,192 @@
+<div th:fragment="matches" class="col-md-12" style="margin-top:4%; margin-left:1%; margin-right:1%; ">
+    <div class="panel-group col-md-6">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a data-toggle="collapse" href="#collapse1">Current Matches</a>
+                </h4>
+            </div>
+            <div id="collapse1" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    <table class="table">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th>Date</th>
+                            <th>Match</th>
+                            <th>Course A</th>
+                            <th>Course X</th>
+                            <th>Course B</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="accordion-toggle" th:each="match, iterStat : ${matches.page}">
+                            <td><span th:text="${match.eventDate}"> </span></td>
+                            <td><span th:text="${match.teamA.name}+' vs '+ ${match.teamB.name}"> </span></td>
+                            <form th:object="${match}" method="post" th:action="@{/home/addBet}">
+                                <input type="hidden" th:value="${match.id}" name="id" id="id">
+                                <td>
+                                    <button class="btn btn-primary"
+                                            id="userType" name="userType" type="hidden" value="A">
+                                        <span th:text="${match.courseA}"></span>
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-success"
+                                            id="userType2" name="userType" type="hidden" value="X">
+                                        <span th:text="${match.courseX}"></span>
+                                    </button>
+                                </td>
+                                <td>
+                                    <button class="btn btn-warning"
+                                            id="userType3" name="userType" type="hidden" value="B">
+                                        <span th:text="${match.courseB}"></span>
+                                    </button>
+                                </td>
+                            </form>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div style="text-align:center;" class="panel-footer">
+                    <nav aria-label="Page navigation" class="paging">
+                        <ul class="pagination" th:if="${matches.page.totalPages > 1}">
+                            <li class="page-item"
+                                th:classappend="${!matches.paging.isPrevEnabled()? 'disabled' : ''}">
+                                <a class="page-link'"
+                                   th:href="${matches.paging.isPrevEnabled()} ? @{'/home?pageNumber=' + ${matches.paging.pageNumber - 1}} : ''"
+                                   tabindex="-1">Previous</a>
+                            </li>
+                            <th:block th:each="item : ${matches.paging.getItems()}">
+                                <li class="page-item"
+                                    th:classappend="${item.index == matches.paging.pageNumber? 'active' : ''}"
+                                    th:if="${item.pageItemType.name() == 'PAGE'}">
+                                    <a class="page-link"
+                                       th:href="@{'/home?pageNumber=' + ${item.index}}"
+                                       th:text="${item.index}"></a>
+                                </li>
+                                <li class="page-item disabled" th:if="${item.pageItemType.name() == 'DOTS'}">
+                                    <a class="page-link" href="#">...</a>
+                                </li>
+                            </th:block>
+                            <li class="page-item"
+                                th:classappend="${!matches.paging.isNextEnabled()? 'disabled' : ''}">
+                                <a class="page-link"
+                                   th:href="${matches.paging.isNextEnabled()} ? @{'/home?pageNumber=' + ${matches.paging.pageNumber + 1}} : ''">Next</a>
+                            </li>
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div style="col-md-1"></div>
+    <div class="col-md-5" id="myCoupon">
+        <div class="panel panel-primary">
+            <div class="panel-heading">Coupon</div>
+            <div class="panel-body">
+                <div th:if="${errorMessage}!=''">
+                    <div class="alert alert-danger">
+                        <span th:text="${errorMessage}"></span>
+                    </div>
+                </div>
+                <table class="table">
+                    <thead class="thead-dark">
+                    <tr>
+                        <th>Match</th>
+                        <th>Course</th>
+                        <th>Risk</th>
+                        <th>User Type</th>
+                        <th>Delete</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="success" th:each="bet : ${bets}">
+                        <form method="post" th:action="@{/home/removeBet}">
+                            <input type="hidden" th:value="${bet.match.id}" name="matchId" id="matchId">
+                            <td><span th:text="${bet.match.teamA.name}+' vs '+ ${bet.match.teamB.name}"> </span>
+                            </td>
+                            <td><span th:text="${bet.course}"> </span></td>
+                            <td><span th:text="${bet.risk} + '%'"> </span></td>
+                            <td>
+                                <span th:text="${bet.matchResult}"> </span>
+                            </td>
+                            <td>
+                                <button type="submit"><a class="glyphicon glyphicon-trash"></a></button>
+                            </td>
+                        </form>
+                    </tr>
+                    </tbody>
+                </table>
+                <form th:object="${coupon}" method="post" th:action="@{/home/saveCoupon}">
+                    <div layout="block" class="panel panel-info" style="margin-top: 10px;">
+                        <div layout="block" class="panel-heading">
+                            Coupon Amount
+                        </div>
+
+                        <div layout="block" class="panel-body">
+                            <input value="20" style="size:30px" type="number" min="20" max="300" step="1"
+                                   id="amount" name="amount" onchange="Calculate()">
+                            <span class="badge badge-info"> <label
+                                    th:text="'Your balance ' + ${user.balance} + 'PLN'"></label></span>
+                        </div>
+                    </div>
+                    <div layout="block" class="panel panel-warning" style="margin-top: 10px;">
+                        <div layout="block" class="panel-heading">
+                            Summary
+                        </div>
+                        <div layout="block" class="panel-body">
+                            <table class="table">
+                                <thead class="thead-dark">
+                                <tr>
+                                    <th>Total Course</th>
+                                    <th>Total Risk</th>
+                                    <th>To Win</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="success">
+                                    <td>
+                                        <label name="totalCourse" id="totalCourse"
+                                               th:text="${totalCourse}"></label>
+                                    </td>
+                                    <td>
+                                        <label th:text="${totalRisk} + '%'"></label>
+                                    </td>
+                                    <td>
+                                        <p id="toWin"></p>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+
+                            <!--                            <div layout="block" class="col-md-12">-->
+                            <!--                                <b>Total Course</b> <label name="totalCourse" id="totalCourse"-->
+                            <!--                                                           th:text="${totalCourse}"></label>-->
+                            <!--                            </div>-->
+
+                            <!--                            <div layout="block" class="col-md-12">-->
+                            <!--                                <b>Total Risk</b> <label th:text="${totalRisk} + '%'"></label>-->
+                            <!--                            </div>-->
+
+                            <!--                            <div class="row">-->
+                            <!--                                <div class="col-md-12">-->
+                            <!--                                    <div class="col-md-2">-->
+                            <!--                                        <b>To Win</b>-->
+                            <!--                                    </div>-->
+                            <!--                                    <div style="text-align:left;" class="col-md-6">-->
+                            <!--                                        <p id="toWin"></p>-->
+                            <!--                                    </div>-->
+                            <!--                                </div>-->
+
+                            <!--                            </div>-->
+
+                        </div>
+                    </div>
+                    <div class="col-md-12" style="margin-top: 10px;">
+                        <button style="width:100%;" class="btn btn-primary" type="submit">Save</a></button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,35 @@
+<div th:fragment="scores" class="col-md-12" style="margin-top:1%; margin-left:1%; margin-right:1%; ">
+    <div class="col-md-12">
+        <div class="panel-group col-md-6">
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        <a data-toggle="collapse" href="#collapse2">Last 10 Matches</a>
+                    </h4>
+                </div>
+                <div id="collapse2" class="panel-collapse collapse">
+                    <div class="panel-body">
+                        <table class="table">
+                            <thead class="thead-dark">
+                            <tr>
+                                <th>Date</th>
+                                <th>Match</th>
+                                <th>Score</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            <tr class="accordion-toggle" th:each="match, iterStat : ${scores}">
+                                <td><span th:text="${match.eventDate}"> </span></td>
+                                <td><span th:text="${match.teamA.name}+' vs '+ ${match.teamB.name}"> </span></td>
+                                <td><span th:text="${match.getScore()}"></span></td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

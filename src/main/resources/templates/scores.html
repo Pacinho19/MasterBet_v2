@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Matches Scores</title>
+    <!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"/>
+
+    <style>
+    body{
+        background: url(https://eskipaper.com/images/soccer-wallpaper-2.jpg)
+                    no-repeat center center fixed;
+    }
+
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #333;
+      position: -webkit-sticky; /* Safari */
+      position: sticky;
+    }
+
+    li {
+      float: left;
+    }
+
+    li a {
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+    }
+
+    li a:hover:not(.active) {
+      background-color: #111;
+    }
+
+    .active {
+      background-color: #04AA6D;
+    }
+
+<!--    th {-->
+<!--    background-color: rgb(153, 222, 168);-->
+<!--    color: black;-->
+<!--}-->
+<!--td{-->
+<!--    background-color: rgb(191, 209, 168);-->
+<!--    color: black;-->
+<!--}-->
+
+.hiddenRow {
+    padding: 0 !important;
+}
+
+a.disabled {
+  pointer-events: none;
+  cursor: default;
+}
+ </style>
+
+</head>
+<body>
+<div th:replace="fragments/topnav :: navbar"/>
+
+<div class="container-fluid" style="margin-top: 60px">
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+
+        <div class="col-sm-10">
+            <div class="panel panel-primary">
+                <div class="panel-heading">Scores
+                    <div style="float:right" th:if="${admin}" clas="row">
+                        <label>Filter</label>
+                            <form method="get" th:action="@{'/view/matches/scores'}">
+                                <select name="filterType" id="filterType">
+                                    <option th:selected="${filterType}=='f1'" th:value="f1" th:text="All"></option>
+                                    <option th:selected="${filterType}=='f2'" th:value="f2" th:text="WithScore"></option>
+                                    <option th:selected="${filterType}=='f3'" th:value="f3" th:text="WithoutScore"></option>
+                                </select>
+                                <button type="submit"><a class="glyphicon glyphicon-search"></a></button>
+                            </form>
+                    </div>
+                </div>
+                <div class="panel-body">
+                    <table class="table">
+                        <thead class="thead-dark">
+                        <tr>
+                            <th>Date</th>
+                            <th>Match</th>
+                            <th>Score</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr class="accordion-toggle" th:each="match, iterStat : ${matches.page}">
+                            <td><span th:text="${match.eventDate}"> </span></td>
+                            <td><span th:text="${match.teamA.name}+' vs '+ ${match.teamB.name}"> </span></td>
+                            <td>
+                                <div th:switch="${admin}==true and ${match.scoreA}==null">
+                                    <div th:case="true">
+                                        <form method="post" th:action="@{/api/match/crud/updateScore}"
+                                              th:object="${match}">
+                                            <input type="hidden" th:value="${match.id}" name="id" id="id">
+                                            <input type="number" required=true id="scoreA"
+                                                   th:field="${match.scoreA}" th:value="${match.scoreA}"/>
+                                            :
+                                            <input type="number" required=true id="scoreB"
+                                                   th:field="${match.scoreB}" th:value="${match.scoreB}"/>
+                                            <button type="submit"><a class="glyphicon glyphicon-ok"></a></button>
+                                        </form>
+                                    </div>
+                                    <div th:case="false">
+                                        <span th:text="${match.getScore()}"></span>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td style="text-align:center;" colspan="6">
+                                <nav aria-label="Page navigation" class="paging">
+                                    <ul class="pagination" th:if="${matches.page.totalPages > 1}">
+                                        <li class="page-item"
+                                            th:classappend="${!matches.paging.isPrevEnabled()? 'disabled' : ''}">
+                                            <a class="page-link'"
+                                               th:href="${matches.paging.isPrevEnabled()} ? @{'/view/matches/scores?pageNumber=' + ${matches.paging.pageNumber - 1} +'&filterType=' +${filterType}} : ''"
+                                               tabindex="-1">Previous</a>
+                                        </li>
+                                        <th:block th:each="item : ${matches.paging.getItems()}">
+                                            <li class="page-item"
+                                                th:classappend="${item.index == matches.paging.pageNumber? 'active' : ''}"
+                                                th:if="${item.pageItemType.name() == 'PAGE'}">
+                                                <a class="page-link"
+                                                   th:href="@{'/view/matches/scores?pageNumber=' + ${item.index}  +'&filterType=' +${filterType}}"
+                                                   th:text="${item.index}"></a>
+                                            </li>
+                                            <li class="page-item disabled"
+                                                th:if="${item.pageItemType.name() == 'DOTS'}">
+                                                <a class="page-link" href="#">...</a>
+                                            </li>
+                                        </th:block>
+                                        <li class="page-item"
+                                            th:classappend="${!matches.paging.isNextEnabled()? 'disabled' : ''}">
+                                            <a class="page-link"
+                                               th:href="${matches.paging.isNextEnabled()} ? @{'/view/matches/scores?pageNumber=' + ${matches.paging.pageNumber + 1}  +'&filterType=' +${filterType}} : ''">Next</a>
+                                        </li>
+                                    </ul>
+                                </nav>
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<div class="col-sm-1"></div>
+</body>
+</html>

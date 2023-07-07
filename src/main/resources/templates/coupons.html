@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Coupons</title>
+    <!--    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">-->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-1.10.2.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
+
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"/>
+    <style th:inline="text">
+    body{
+        background: url(https://eskipaper.com/images/soccer-wallpaper-2.jpg)
+                    no-repeat center center fixed;
+    }
+
+    ul {
+      list-style-type: none;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background-color: #333;
+      position: -webkit-sticky; /* Safari */
+      position: sticky;
+    }
+
+    li {
+      float: left;
+    }
+
+    li a {
+      display: block;
+      color: white;
+      text-align: center;
+      padding: 14px 16px;
+      text-decoration: none;
+    }
+
+    li a:hover:not(.active) {
+      background-color: #111;
+    }
+
+    .active {
+      background-color: #04AA6D;
+    }
+    th {
+    background-color: rgb(153, 222, 168);
+    color: black;
+}
+td{
+    background-color: rgb(191, 209, 168);
+    color: black;
+}
+
+.hiddenRow {
+    padding: 0 !important;
+}
+
+
+
+    </style>
+
+</head>
+<body>
+<div th:replace="fragments/topnav :: navbar"/>
+
+<div class="container-fluid" style="margin-top: 60px">
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-10">
+            <table class="table">
+                <thead class="thead-dark">
+                <tr>
+                    <th>Date</th>
+                    <th>Amount</th>
+                    <th>Total Course</th>
+                    <th>Risk</th>
+                    <th>To Win</th>
+                    <th>Status</th>
+                    <th>State</th>
+                    <th>Bets</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr data-toggle="collapse" th:attr="data-target=|#demo${iterStat.count}|" class="accordion-toggle"
+                    th:each="coupon, iterStat : ${coupons}">
+                    <td><span th:text="${coupon.createdDate}"> </span></td>
+                    <td><span th:text="${coupon.amount}"> </span></td>
+                    <td><span th:text="${coupon.totalCourse}"></span></td>
+                    <td><span th:text="${coupon.totalRisk}"></span></td>
+                    <td><span th:text="${coupon.toWin}"></span></td>
+                    <td><span th:text="${coupon.status}"></span></td>
+                    <td><span th:text="${coupon.state}"></span></td>
+                    <td>
+                        <button class="btn btn-default btn-xs"><span class="glyphicon glyphicon-eye-open"></span>
+                        </button>
+                    </td>
+                    <td colspan="12" class="hiddenRow">
+                        <div class="accordian-body collapse" th:id="'demo' + ${iterStat.count}">
+                            <table class="table">
+                                <thead class="thead-dark">
+                                <tr>
+                                    <th>Match</th>
+                                    <th>Course</th>
+                                    <th>Risk</th>
+                                    <th>Score</th>
+                                    <th>User Type</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr class="success" th:each="bet : ${coupon.bets}">
+                                    <td><span th:text="${bet.match.teamA.name}+' vs '+ ${bet.match.teamB.name}"> </span>
+                                    </td>
+                                    <td><span th:text="${bet.course}"> </span></td>
+                                    <td><span th:text="${bet.risk}"> </span></td>
+                                    <td><span th:text="${bet.match.score}"> </span></td>
+                                    <!--                                    <td th:style=" (${bet.match.result} == ${bet.matchResult} ? 'background:green' : 'background:red')"><span th:text="${bet.matchResult}"> </span></td>-->
+                                    <td th:style="${bet.match.result}==null ?  'background:yellow' : (${bet.match.result} == ${bet.matchResult} ? 'background:green' : 'background:red')">
+                                        <span th:text="${bet.matchResult}"> </span></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </td>
+                </tr>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+<div class="col-sm-1"></div>
+</div>
+</body>
+</html>
